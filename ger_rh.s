@@ -35,7 +35,9 @@
 	mostraCargo:	.asciz	"\nCargo: %s"
 	mostraSalario:	.asciz	"\nSalario: %d"
     #MENU PRINCIPAL DO PROGRAMA
-    menu:   .asciz  "\nMENU DE SELECAO\n\n1- INSERIR UM REGISTRO\n2- REMOVER UM REGISTRO\n3- CONSULTAR REGISTRO POR NOME\n4- MOSTRAR RELATORIO DE REGISTROS"
+    menu:   .asciz  "\nMENU DE SELECAO\n\n1- INSERIR UM REGISTRO\n2- REMOVER UM REGISTRO\n3- CONSULTAR REGISTRO POR NOME\n4- MOSTRAR RELATORIO DE REGISTROS\n0- SAIR"
+    selecaoOp: .asciz "\nDigitar a sua escolha:\n"
+    opcao:  .int 0
     #DEFINIÇÃO DO TAMANHO DO REGISTRO (EM BYTES)
     tamDoRegistro:		.int	296
     #DEFINIÇÃO DE RÓTULOS PARA TIPOS
@@ -48,20 +50,61 @@
 .globl _start
 
 _start:
+    pushl $abertura
+    call printf
+    addl $4, %esp
     call _escolher
 _fim:
-
+    pushl $0
+    call exit
 _escolher:
-    #criar um if para cada uma das operacoes do menu
+
+    #Menu inicial
+
+    pushl $menu
+    call printf
+    addl $4, %esp
+    
+    #Selecao de opcao
+
+    pushl $selecaoOp
+    call printf
+    #addl $4, %esp
+    
+    pushl $opcao
+    pushl $Inteiro
+    call scanf
+    #addl $4, %esp
+
+    movl $opcao, %eax
+
+    cmpl $1, %eax
+    je _insertReg
+
+    cmpl $2, %eax
+    je _removeReg
+
+    cmpl $3, %eax
+    je _readReg
+
+    cmpl $4, %eax
+    je _readRelatorio
+
+    jmp _fim
+
+
+
 _insertReg:
 
     #Alocando para a lista o tamanho do registro
+    
     pushl tamDoRegistro
     call malloc
     movl %eax, lista
     addl $4, %esp
 
     #Lendo o nome
+    
     pushl $pedeNome
     call printf
     addl $4, %esp
@@ -242,6 +285,7 @@ _insertReg:
     addl $11, %edi
 
     #Lendo salario
+
     pushl %edi
 
     pushl $pedeSalario
@@ -268,3 +312,6 @@ _readReg:
     #ler um registro por nome
 _readRelatorio:
     #mostrar todos os registros
+
+
+
