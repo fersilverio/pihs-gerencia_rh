@@ -39,8 +39,8 @@
     #DEFINIÇÃO DO TAMANHO DO REGISTRO (EM BYTES)
     tamDoRegistro:		.int	296
     #DEFINIÇÃO DE RÓTULOS PARA TIPOS
-	Int:	.asciz	"%d"
-	Chat:	.asciz	"%c"
+	Inteiro:	.asciz	"%d"
+	Char:	.asciz	"%c"
 	String:	.asciz	"%s"
 	lista:		.int	0
 	NULL:		.int	0
@@ -54,7 +54,214 @@ _fim:
 _escolher:
     #criar um if para cada uma das operacoes do menu
 _insertReg:
-    #inserir registro 
+
+    #Alocando para a lista o tamanho do registro
+    pushl tamDoRegistro
+    call malloc
+    movl %eax, lista
+    addl $4, %esp
+
+    #Lendo o nome
+    pushl $pedeNome
+    call printf
+    addl $4, %esp
+    movl lista, %edi
+    pushl %edi
+    call gets
+
+    popl %edi
+    addl $41, %edi
+
+    #Lendo data de nascimento
+
+    pushl %edi
+
+    pushl $pedeDataNasc
+    call printf
+    addl $4, %esp
+    pushl %edi
+    call gets
+
+    popl %edi
+    addl $11, %edi
+
+    #Lendo o genero
+
+    pushl %edi
+
+    pushl $pedeGenero
+    call printf
+    addl $4, %esp
+    pushl $Char
+    call scanf
+    addl $4, %esp
+
+    popl %edi
+
+    #Lendo nome da rua
+
+    pushl %edi
+
+    pushl $pedeRua
+    call printf
+    addl $4, %esp
+    pushl %edi
+    call gets
+
+    popl %edi
+    addl $41, %edi
+
+    #Lendo o numero da rua
+
+    pushl %edi
+
+    pushl $pedeNumRua
+    call printf
+    addl $4, %esp
+    pushl $Inteiro
+    call scanf
+    addl $4, %esp
+
+    popl %edi
+
+    #Lendo bairro
+
+    pushl %edi
+
+    pushl $pedeBairro
+    call printf
+    addl $4, %esp
+    pushl %edi
+    call gets
+
+    popl %edi
+    addl $41, %edi
+
+    #Lendo CEP
+
+    pushl %edi
+
+    pushl $pedeCep
+    call printf
+    addl $4, %esp
+    pushl %edi
+    call gets
+
+    popl %edi
+    addl $9, %edi
+
+    #Lendo Cidade
+
+    pushl %edi
+
+    pushl $pedeCidade
+    call printf
+    addl $4, %esp
+    pushl %edi
+    call gets
+
+    popl %edi
+    addl $21, %edi
+
+    #Lendo telefone
+
+    pushl %edi
+
+    pushl $pedeTelefone
+    call printf
+    addl $4, %esp
+    pushl %edi
+    call gets
+
+    popl %edi
+    addl $11, %edi
+
+    #Lendo Email
+
+    pushl %edi
+
+    pushl $pedeEmail
+    call printf
+    addl $4, %esp
+    pushl %edi
+    call gets
+
+    popl %edi
+    addl $41, %edi
+
+    #Lendo RG
+
+    pushl %edi
+
+    pushl $pedeRg
+    call printf
+    addl $4, %esp
+    pushl %edi
+    call gets
+
+    popl %edi
+    addl $10, %edi
+
+    #Lendo CPF
+
+    pushl %edi
+
+    pushl $pedeCpf
+    call printf
+    addl $4, %esp
+    pushl %edi
+    call gets
+
+    popl %edi
+    addl $12, %edi
+
+    #Lendo data de contratacao
+
+    pushl %edi
+
+    pushl $pedeDataContr
+    call printf
+    addl $4, %esp
+    pushl %edi
+    call gets
+
+    popl %edi
+    addl $11, %edi
+
+    #Lendo Cargo
+
+    pushl %edi
+
+    pushl $pedeCargo
+    call printf
+    addl $4, %esp
+    pushl %edi
+    call gets
+
+    popl %edi
+    addl $11, %edi
+
+    #Lendo salario
+    pushl %edi
+
+    pushl $pedeSalario
+    call printf
+    addl $4, %esp
+    pushl $Inteiro
+    call scanf
+    addl $4, %esp
+
+    popl %edi
+
+    #Finalizando a leitura do registro
+
+    addl $4, %edi
+
+    movl $NULL, (%edi)
+
+    ret
+
+
 _removeReg:
     #remover registro
 _readReg:
