@@ -63,7 +63,7 @@ _escolher:
 
     pushl $menu
     call printf
-    addl $4, %esp
+    
     
     #Selecao de opcao
 
@@ -74,10 +74,17 @@ _escolher:
     pushl $opcao
     pushl $Inteiro
     call scanf
-    #addl $4, %esp
+    addl $12, %esp
 
     movl $opcao, %eax
 
+    pushl $Char			#para remover o enter
+	call scanf
+	addl $4, %esp
+
+    cmpl $0, %eax
+    je  _fim
+    
     cmpl $1, %eax
     je _insertReg
 
@@ -90,7 +97,6 @@ _escolher:
     cmpl $4, %eax
     je _readRelatorio
 
-    jmp _fim
 
 
 
@@ -150,6 +156,7 @@ _insertReg:
     addl $4, %esp
     pushl %edi
     call gets
+    call gets
 
     popl %edi
     addl $41, %edi
@@ -175,6 +182,7 @@ _insertReg:
     call printf
     addl $4, %esp
     pushl %edi
+    call gets
     call gets
 
     popl %edi
