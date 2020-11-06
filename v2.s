@@ -30,20 +30,15 @@ _start:
     pushl $abertura
     call printf
     addl $4, %esp
-    
     call _escolher
-    #call _insertReg
-    #call _showReg
 _fim:
     pushl $0
     call exit
 
-
-
-
-
-
-_insertReg:
+_readReg:
+    
+    #Funcao que le os campos de um registro
+    
     pushl tamDoRegistro
     call malloc
     movl %eax, lista
@@ -90,6 +85,9 @@ _insertReg:
 
 
 _showReg:
+    
+    #Funcao que mostra na tela os campos de um registro
+    
     movl lista, %edi
     
     pushl %edi
@@ -126,8 +124,9 @@ _showReg:
 
 
 
-_op_insert:
-    call _insertReg
+_op_readReg:
+    #Procedimento que redireciona para a funcao de de ler registro e apos isso voltar para o menu
+    call _readReg
     jmp _escolher
 
 
@@ -135,6 +134,9 @@ _op_insert:
 
 
 _escolher:
+    
+    #Menu que direciona o programa para uma funcao que deve ser executada
+    
     pushl $menu
     call printf
     pushl $selecaoOp
@@ -146,7 +148,7 @@ _escolher:
     addl $16, %esp
 
     cmpl $1, opcao
-    jz _op_insert
+    jz _op_readReg
 
     cmpl $0, opcao
     jz _fim
