@@ -137,13 +137,13 @@ _op_insert:
 _escolher:
     pushl $menu
     call printf
-
+    pushl $selecaoOp
+    call printf
     pushl $opcao
     pushl $Inteiro
     call scanf
 
-    addl $12, %esp
-
+    addl $16, %esp
 
     cmpl $1, opcao
     jz _op_insert
