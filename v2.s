@@ -56,6 +56,7 @@ _insertReg:
     movl lista, %edi
     pushl %edi
     call gets
+    call gets
 
     popl %edi
     addl $41, %edi
@@ -141,9 +142,6 @@ _escolher:
 
     addl $12, %esp
 
-    pushl $Char
-    call scanf
-    addl $4, %esp
 
     cmpl $1, opcao
     jz _insertReg
@@ -154,4 +152,3 @@ _escolher:
     jmp _escolher
 
 
-    
