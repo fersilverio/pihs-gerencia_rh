@@ -31,10 +31,10 @@ _start:
     call printf
     addl $4, %esp
     
-    #call _escolher
-    call _insertReg
-    call _showReg
-#_fim:
+    call _escolher
+    #call _insertReg
+    #call _showReg
+_fim:
     pushl $0
     call exit
 
@@ -79,15 +79,11 @@ _insertReg:
     call scanf
     addl $4, %esp
 
-    pushl $Char #Ignorar o ENTER
-    call scanf
-    addl $4, %esp
-
     popl %edi
-
     addl $4, %edi
 
     movl $NULL, (%edi)
+    subl $57, %edi
 
     ret 
 
@@ -120,10 +116,42 @@ _showReg:
     addl $8, %esp
 
     popl %edi
-    #addl $4, %edi
-    #pushl %edi
 
-    #popl %edi
     subl $53, %edi
 
     ret
+
+
+
+
+
+
+
+
+
+
+
+_escolher:
+    pushl $menu
+    call printf
+
+    pushl $opcao
+    pushl $Inteiro
+    call scanf
+
+    addl $12, %esp
+
+    pushl $Char
+    call scanf
+    addl $4, %esp
+
+    cmpl $1, opcao
+    jz _insertReg
+
+    cmpl $0, opcao
+    jz _fim
+
+    jmp _escolher
+
+
+    
