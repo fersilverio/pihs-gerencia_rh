@@ -126,7 +126,9 @@ _showReg:
 
 
 
-
+_op_insert:
+    call _insertReg
+    jmp _escolher
 
 
 
@@ -144,7 +146,7 @@ _escolher:
 
 
     cmpl $1, opcao
-    jz _insertReg
+    jz _op_insert
 
     cmpl $0, opcao
     jz _fim
