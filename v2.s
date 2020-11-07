@@ -22,7 +22,12 @@
 	Char:	.asciz	"%c"
 	String:	.asciz	"%s"
 	lista:		.int	0
+    lista_copy:  .int    0
 	NULL:		.int	0
+    #PONTEIROS PARA ORIENTACAO NA LISTA
+    p_atual: .int NULL
+	p_ant: .int NULL
+	p_fim: .int NULL
 .section .text
 .globl _start
 
@@ -37,8 +42,28 @@ _fim:
 
 #FUNCOES CENTRAIS
 
+_insertReg:
+    call _readReg
+    movl lista_copy, %eax
+    cmpl $NULL, %eax 
+    jne  _insertInTheEnd 
+    movl %eax, 57(%edi) #movendo eax pra ultima pos do edi
+    movl %edi, lista_copy
+    movl %edi, p_fim
+    ret
+
+    
+    
+
 
 #FUNCOES AUXILIARES
+
+_insertInTheEnd:
+    movl p_fim, %eax
+    movl %edi, 57(%eax)
+    movl %edi, p_fim
+    ret
+
 
 _readReg:
     
@@ -92,9 +117,8 @@ _readReg:
 _showReg:
     
     #Funcao que mostra na tela os campos de um registro
-    
-    movl lista, %edi
-    
+    #movl lista_copy, %edi
+
     pushl %edi
 
     pushl $mostraNome
@@ -125,13 +149,28 @@ _showReg:
 
     ret
 
+_loop_for_show_all_records:
+    cmpl $NULL, %edi
+    jz   _escolher
+    pushl %edi
+    call _showReg
+    popl %edi
+    movl 57(%edi), %edi
+    jmp  _loop_for_show_all_records
+
+
+_show_all_records:
+    movl lista_copy, %edi
+    jmp _loop_for_show_all_records
+
+
 
 
 #PROCEDIMENTOS CHAMADORES DE FUNCOES
 
-_op_readReg:
+_op_insertReg:
     #Procedimento que redireciona para a funcao de de ler registro e apos isso voltar para o menu
-    call _readReg
+    call _insertReg
     jmp _escolher
 
 
@@ -153,8 +192,10 @@ _escolher:
     addl $16, %esp
 
     cmpl $1, opcao
-    jz _op_readReg
+    jz _op_insertReg
 
+    cmpl $4, opcao
+    jz _show_all_records
     cmpl $0, opcao
     jz _fim
 
