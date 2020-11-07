@@ -13,7 +13,7 @@
     mostraCpf:	.asciz	"\nCPF: %s"
     #MENU PRINCIPAL DO PROGRAMA
     menu:   .asciz  "\nMENU DE SELECAO\n\n1- INSERIR UM REGISTRO\n2- REMOVER UM REGISTRO\n3- CONSULTAR REGISTRO POR NOME\n4- MOSTRAR RELATORIO DE REGISTROS\n0- SAIR"
-    selecaoOp: .asciz "\nDigitar a sua escolha:\n"
+    selecaoOp: .asciz "\nDIGITAR A SUA ESCOLHA:\n"
     opcao:  .int 0
     #DEFINIÇÃO DO TAMANHO DO REGISTRO (EM BYTES)
     tamDoRegistro:		.int	61
@@ -34,6 +34,11 @@ _start:
 _fim:
     pushl $0
     call exit
+
+#FUNCOES CENTRAIS
+
+
+#FUNCOES AUXILIARES
 
 _readReg:
     
@@ -122,7 +127,7 @@ _showReg:
 
 
 
-
+#PROCEDIMENTOS CHAMADORES DE FUNCOES
 
 _op_readReg:
     #Procedimento que redireciona para a funcao de de ler registro e apos isso voltar para o menu
