@@ -30,7 +30,6 @@
     p_atual: .int NULL
 	p_ant: .int NULL
 	p_fim: .int NULL
-    #p_reg: .int NULL
     flag:   .int 0
 
     
@@ -121,7 +120,32 @@ _searchPosition:
     jge _insertEnd
 
 
+_searchMid:
+    movl p_atual, %eax
+    cmpl %eax, p_fim
+    je _insertInPosition
 
+    movl %eax, p_atual
+    pushl p_atual
+    pushl %edi
+    call strcasecmp
+    addl $8, %esp
+    cmpl $0, %eax
+    jle _insertInPosition
+
+    movl p_atual, %eax
+    movl %eax, p_ant
+    movl 61(%eax), %ebx
+    movl %ebx, p_atual
+    jmp _searchMid
+
+
+_insertInPosition:
+    movl p_atual, %eax
+    movl p_ant, %esi
+    movl %edi, 61(%esi)
+    movl %eax, 61(%esi)
+    ret
 
 
 _insertStart:
@@ -158,9 +182,9 @@ _menu:
     jz   _insertReg
     cmpl $2, opcao
     jz   _removeReg 
-    cmpl $1, opcao
+    cmpl $3, opcao
     jz   _readReg_ByName 
-    cmpl $1, opcao
+    cmpl $4, opcao
     jz   _read_all_records
 
     jmp _menu  
