@@ -31,6 +31,8 @@
 	p_ant: .int NULL
 	p_fim: .int NULL
     flag:   .int 0
+    #MENSAGENS SUPORTE
+    msgEmpty:   .asciz "LISTA VAZIA\n"
 
     
 
@@ -46,7 +48,7 @@ _fim:
     pushl $0
     call exit
 
-
+# FUNCOES PARA INSERCAO DE REGISTROS
 
 _insertReg:
     movl tamDoRegistro, %ecx
@@ -161,6 +163,67 @@ _insertEnd:
     ret
 
 
+#FUNCOES PARA MOSTRAR REGISTROS
+
+_showReg:
+    pushl %edi
+
+    pushl $mostraNome
+    call printf
+    addl $4, %esp
+
+    popl %edi
+    addl $41, %edi
+    pushl %edi
+
+    pushl %edi
+    pushl $mostraCpf
+    call printf
+    addl $8, %esp
+
+    popl %edi
+    addl $12, %edi
+    pushl %edi
+
+    pushl (%edi)
+    pushl $mostraGenero
+    call printf
+    addl $8, %esp
+
+    popl %edi
+
+    subl $53, %edi
+
+    ret
+
+
+_return:
+    ret
+
+_emptyList:
+    pushl $msgEmpty
+    call printf
+    addl $4, %esp
+    jmp _return
+
+_iterateList:
+    call _showReg
+    pushl $pulaLin
+    call printf
+    addl $4, %esp
+    cmpl %edi, p_fim
+    je _return
+    movl 61(%edi), %edi
+    jmp _iterateList
+
+
+
+_show_all_records:
+    movl p_inicio, %edi
+    cmpl $NULL, %edi
+    je _emptyList
+    jne _iterateList
+
 _menu:
     pushl $menu
     call  printf
@@ -183,8 +246,8 @@ _menu:
     cmpl $2, opcao
     jz   _removeReg 
     cmpl $3, opcao
-    jz   _readReg_ByName 
+    jz   _show_Reg_ByName 
     cmpl $4, opcao
-    jz   _read_all_records
+    jz   _show_all_records
 
     jmp _menu  
