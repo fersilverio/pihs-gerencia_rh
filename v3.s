@@ -224,6 +224,17 @@ _show_all_records:
     je _emptyList
     jne _iterateList
 
+
+#FUNCOES PARA REMOVER
+
+_removeReg:
+
+#FUNCOES PARA BUSCA
+
+_show_Reg_ByName:
+
+
+
 _menu:
     pushl $menu
     call  printf
