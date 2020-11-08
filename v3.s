@@ -63,6 +63,10 @@ _insertReg:
 
     cmpl $NULL, %eax
     jne _searchPosition
+    movl %eax, 61(%edi)
+    movl %edi, p_inicio
+    movl %edi, p_fim
+    ret
 
 _readReg:
     pushl %edi
@@ -192,7 +196,7 @@ _showReg:
 
     popl %edi
 
-    subl $53, %edi
+    subl $57, %edi
 
     ret
 
