@@ -246,9 +246,9 @@ _menu:
     addl $16, %esp
 
     #PARA REMOVER O ENTER E EVITAR BUGS
-    pushl $Char
-    call scanf
-    addl $4, %esp
+    #pushl $Char
+    #call scanf
+    #addl $4, %esp
 
     cmpl $0, opcao
     jz   _fim
@@ -262,3 +262,4 @@ _menu:
     jz   _show_all_records
 
     jmp _menu  
+
