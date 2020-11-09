@@ -239,7 +239,7 @@ _show_all_records:
 
 _removeReg:
     movl $0, flag
-    call _searchReg_ByName
+    call _searchReg_ByName2
     movl $0, %eax
     cmpl %eax, flag
     je _return
@@ -281,6 +281,52 @@ _removeMiddle:
     jmp _return
 
 
+
+
+# PROCURAR POR NOME SEM RETORNO PARA O MENU - VERSAO PARA REMOVER
+_searchReg_ByName2:
+    movl p_inicio, %edi
+    cmpl $NULL, %edi
+    je _emptyList
+    pushl $pedeNomeBusca
+    call printf
+    pushl $nomeBusca
+    call gets
+    call gets
+    addl $8, %esp
+
+_searching2:
+    pushl %edi
+    pushl $nomeBusca
+    call strcasecmp
+    addl $8, %esp
+    cmpl $0, %eax
+    je _success2
+    cmpl %edi, p_fim
+    je _searchEnd2
+    movl %edi, p_ant
+    movl 57(%edi), %edi
+    jmp _searching2
+
+
+_success2:
+    movl $1, %eax
+    movl %eax, flag
+    call _showReg
+    pushl $pulaLin
+    call printf
+    addl $4, %esp
+    jmp _returnForRemove
+
+_searchEnd2:
+    pushl $msgRgNotFound
+    call printf
+    addl $4, %esp
+    jmp _returnForRemove
+
+
+_returnForRemove:
+    ret
     
 
 #FUNCOES PARA BUSCA
