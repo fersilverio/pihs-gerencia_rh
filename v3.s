@@ -272,13 +272,13 @@ _success:
     pushl $pulaLin
     call printf
     addl $4, %esp
-    ret
+    jmp _return
 
 _searchEnd:
     pushl $msgRgNotFound
     call printf
     addl $4, %esp
-    ret
+    jmp _return
 
 _menu:
     pushl $menu
