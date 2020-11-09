@@ -68,7 +68,7 @@ _insertReg:
 
     cmpl $NULL, %eax
     jne _searchPosition
-    movl %eax, 61(%edi)
+    movl %eax, 57(%edi)
     movl %edi, p_inicio
     movl %edi, p_fim
     jmp _menu
@@ -114,7 +114,7 @@ _readReg:
 
 _searchPosition:
     movl %eax, p_ant
-    movl 61(%eax), %ebx
+    movl 57(%eax), %ebx
     movl %ebx, p_atual
 
     pushl p_inicio
@@ -155,20 +155,20 @@ _searchMid:
 _insertInPosition:
     movl p_atual, %eax
     movl p_ant, %esi
-    movl %edi, 61(%esi)
-    movl %eax, 61(%esi)
+    movl %edi, 57(%esi)
+    movl %eax, 57(%esi)
     jmp _menu
 
 
 _insertStart:
     movl p_inicio, %esi
-    movl %esi, 61(%edi)
+    movl %esi, 57(%edi)
     movl %edi, p_inicio
     jmp _menu
 
 _insertEnd:
     movl p_fim, %eax
-    movl %edi, 61(%eax)
+    movl %edi, 57(%eax)
     movl %edi, p_fim
     jmp _menu
 
@@ -223,7 +223,7 @@ _iterateList:
     addl $4, %esp
     cmpl %edi, p_fim
     je _return
-    movl 61(%edi), %edi
+    movl 57(%edi), %edi
     jmp _iterateList
 
 
