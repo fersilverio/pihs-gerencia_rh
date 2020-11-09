@@ -197,7 +197,7 @@ _showReg:
 
     popl %edi
 
-    subl $57, %edi
+    subl $53, %edi
 
     ret
 
