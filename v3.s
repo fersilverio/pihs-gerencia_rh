@@ -34,6 +34,7 @@
     #MENSAGENS SUPORTE
     msgEmpty:   .asciz "LISTA VAZIA\n"
     msgRgNotFound: .asciz "REGISTRO NAO ENCONTRADO"
+    msgRmv: .asciz "REGISTRO REMOVIDO\n"
     #VARIAVEIS SUPORTE
     nomeBusca: .space 41
 
@@ -237,6 +238,50 @@ _show_all_records:
 #FUNCOES PARA REMOVER
 
 _removeReg:
+    movl $0, flag
+    call _searchReg_ByName
+    movl $0, %eax
+    cmpl %eax, flag
+    je _return
+    cmpl %edi, p_inicio
+    je _removeFront
+    cmpl %edi, p_fim
+    je _removeEnd
+    jmp _removeMiddle
+
+_removeFront:
+    movl 57(%edi), %eax
+    movl %eax, p_inicio
+    pushl %edi
+    call free
+    pushl $msgRmv
+    call printf
+    addl $8, %esp
+    jmp _return
+
+_removeEnd:
+    movl p_ant, %eax
+    movl %eax, p_fim
+    pushl %edi
+    call free
+    pushl $msgRmv
+    call printf
+    addl $8, %esp
+    jmp _return
+
+_removeMiddle:
+    movl p_ant, %esi
+    movl 61(%edi), %eax
+    movl %eax, 61(%esi)
+    pushl %edi
+    call free
+    pushl $msgRmv
+    call printf
+    addl $8, %esp
+    jmp _return
+
+
+    
 
 #FUNCOES PARA BUSCA
 
