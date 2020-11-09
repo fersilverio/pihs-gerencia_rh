@@ -6,7 +6,7 @@
     pedeNome:	.asciz	"\nDigitar o nome completo: " #STRING DE 40 BYTES + CARACTER DE FIM DE STRING = 41 BYTES
     pedeCpf:	.asciz	"\nDigitar o numero do CPF: " #STRING DE 11 BYTES + CARACTER DE FIM DE STRING = 12 BYTES
     pedeGenero:	.asciz	"\nDigite o genero <M>asculino/<F>eminino " #CARACTER DE 1 BYTE
-
+    pedeNomeBusca: .asciz "\nDigite o nome para a busca: "
     #MOSTRAR OS CAMPOS POR TIPO
 	mostraNome:	.asciz	"\nNome: %s"
     mostraGenero:	.asciz	"\nGenero: %c"
@@ -33,6 +33,10 @@
     flag:   .int 0
     #MENSAGENS SUPORTE
     msgEmpty:   .asciz "LISTA VAZIA\n"
+    msgRgNotFound: .asciz "REGISTRO NAO ENCONTRADO"
+    #VARIAVEIS SUPORTE
+    nomeBusca: .space 41
+
 
     
 
@@ -236,9 +240,45 @@ _removeReg:
 
 #FUNCOES PARA BUSCA
 
-_show_Reg_ByName:
+_searchReg_ByName:
+    movl p_inicio, %edi
+    cmpl $NULL, %edi
+    je _emptyList
+    pushl $pedeNomeBusca
+    call printf
+    pushl $nomeBusca
+    call gets
+    call gets
+    addl $8, %esp
+
+_searching:
+    pushl %edi
+    pushl $nomeBusca
+    call strcasecmp
+    addl $8, %esp
+    cmpl $0, %eax
+    je _success
+    cmpl %edi, p_fim
+    je _searchEnd
+    movl %edi, p_ant
+    movl 57(%edi), %edi
+    jmp _searching
 
 
+_success:
+    movl $1, %eax
+    movl %eax, flag
+    call _showReg
+    pushl $pulaLin
+    call printf
+    addl $4, %esp
+    ret
+
+_searchEnd:
+    pushl $msgRgNotFound
+    call printf
+    addl $4, %esp
+    ret
 
 _menu:
     pushl $menu
@@ -250,10 +290,6 @@ _menu:
     call scanf
     addl $16, %esp
 
-    #PARA REMOVER O ENTER E EVITAR BUGS
-    #pushl $Char
-    #call scanf
-    #addl $4, %esp
 
     cmpl $0, opcao
     jz   _fim
@@ -262,7 +298,7 @@ _menu:
     cmpl $2, opcao
     jz   _removeReg 
     cmpl $3, opcao
-    jz   _show_Reg_ByName 
+    jz   _searchReg_ByName 
     cmpl $4, opcao
     jz   _show_all_records
 
