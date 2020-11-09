@@ -66,7 +66,7 @@ _insertReg:
     movl %eax, 61(%edi)
     movl %edi, p_inicio
     movl %edi, p_fim
-    ret
+    jmp _menu
 
 _readReg:
     pushl %edi
@@ -74,6 +74,7 @@ _readReg:
     pushl $pedeNome
     call printf
     addl $4, %esp
+    call gets
     call gets
 
     popl %edi
@@ -151,20 +152,20 @@ _insertInPosition:
     movl p_ant, %esi
     movl %edi, 61(%esi)
     movl %eax, 61(%esi)
-    ret
+    jmp _menu
 
 
 _insertStart:
     movl p_inicio, %esi
     movl %esi, 61(%edi)
     movl %edi, p_inicio
-    ret
+    jmp _menu
 
 _insertEnd:
     movl p_fim, %eax
     movl %edi, 61(%eax)
     movl %edi, p_fim
-    ret
+    jmp _menu
 
 
 #FUNCOES PARA MOSTRAR REGISTROS
@@ -202,7 +203,7 @@ _showReg:
 
 
 _return:
-    ret
+    jmp _menu
 
 _emptyList:
     pushl $msgEmpty
