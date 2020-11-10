@@ -40,7 +40,7 @@
     selecaoOp: .asciz "\nDIGITAR A SUA ESCOLHA:\n"
     opcao:  .int 0
     #DEFINIÇÃO DO TAMANHO DO REGISTRO (EM BYTES)
-    tamDoRegistro:		.int	270
+    tamDoRegistro:		.int	274
     #DEFINIÇÃO DE RÓTULOS PARA TIPOS
 	Inteiro:	.asciz	"%d"
 	Char:	.asciz	"%c"
@@ -93,7 +93,7 @@ _insertReg:
 
     cmpl $NULL, %eax
     jne _searchPosition
-    movl %eax, 266(%edi)
+    movl %eax, 270(%edi)
     movl %edi, p_inicio
     movl %edi, p_fim
 
@@ -136,7 +136,7 @@ _readReg:
 
     popl %edi
     addl $4, %edi
-
+    
     pushl %edi
 
     pushl $pedeDataNasc
@@ -269,13 +269,13 @@ _readReg:
     addl $4, %edi
 
     movl $NULL, (%edi)
-    subl $266, %edi
+    subl $270, %edi
 
     ret
 
 _searchPosition:
     movl %eax, p_ant
-    movl 266(%eax), %ebx
+    movl 270(%eax), %ebx
     movl %ebx, p_atual
 
     pushl p_inicio
@@ -316,20 +316,20 @@ _searchMid:
 _insertInPosition:
     movl p_atual, %eax
     movl p_ant, %esi
-    movl %edi, 266(%esi)
-    movl %eax, 266(%esi)
+    movl %edi, 270(%esi)
+    movl %eax, 270(%esi)
     jmp _menu
 
 
 _insertStart:
     movl p_inicio, %esi
-    movl %esi, 266(%edi)
+    movl %esi, 270(%edi)
     movl %edi, p_inicio
     jmp _menu
 
 _insertEnd:
     movl p_fim, %eax
-    movl %edi, 266(%eax)
+    movl %edi, 270(%eax)
     movl %edi, p_fim
     jmp _menu
 
@@ -352,10 +352,9 @@ _showReg:
     addl $41, %edi
     pushl %edi
 
-    pushl %edi
     pushl $mostraCpf
     call printf
-    addl $8, %esp
+    addl $4, %esp
 
     popl %edi
     addl $12, %edi
@@ -371,8 +370,6 @@ _showReg:
     pushl %edi
 
     #
-    pushl %edi
-
     pushl $mostraDataNasc
     call printf
     addl $4, %esp
@@ -382,8 +379,6 @@ _showReg:
     pushl %edi
 
     #
-
-    pushl %edi
     pushl $mostraRua
     call printf
     addl $4, %esp
@@ -397,13 +392,10 @@ _showReg:
 
     pushl $mostraNumRua
     call printf
-    addl $4, %esp
+    addl $8, %esp
 
     popl %edi
     addl $4, %edi
-    pushl %edi
-
-
     pushl %edi
 
     pushl $mostraBairro
@@ -414,18 +406,12 @@ _showReg:
     addl $41, %edi
     pushl %edi
 
-
-    pushl %edi
-
     pushl $mostraCep
     call printf
     addl $4, %esp
 
     popl %edi
     addl $9, %edi
-    pushl %edi
-
-
     pushl %edi
 
     pushl $mostraCidade
@@ -436,18 +422,12 @@ _showReg:
     addl $21, %edi
     pushl %edi
 
-
-    pushl %edi
-
     pushl $mostraTelefone
     call printf
     addl $4, %esp
 
     popl %edi
     addl $11, %edi
-    pushl %edi
-
-
     pushl %edi
 
     pushl $mostraEmail
@@ -458,9 +438,6 @@ _showReg:
     addl $41, %edi
     pushl %edi
 
-
-    pushl %edi
-
     pushl $mostraRg
     call printf
     addl $4, %esp
@@ -469,18 +446,12 @@ _showReg:
     addl $10, %edi
     pushl %edi
 
-
-    pushl %edi
-
     pushl $mostraDataContr
     call printf
     addl $4, %esp
 
     popl %edi
     addl $10, %edi
-    pushl %edi
-
-
     pushl %edi
 
     pushl $mostraCargo
@@ -502,9 +473,7 @@ _showReg:
     addl $4, %edi
 
 
-    popl %edi
-
-    subl $262, %edi
+    subl $270, %edi
 
     ret
 
@@ -525,7 +494,7 @@ _iterateList:
     addl $4, %esp
     cmpl %edi, p_fim
     je _return
-    movl 266(%edi), %edi
+    movl 270(%edi), %edi
     jmp _iterateList
 
 
@@ -557,7 +526,7 @@ _removeReg:
     jmp _removeMiddle
 
 _removeFront:
-    movl 266(%edi), %eax
+    movl 270(%edi), %eax
     movl %eax, p_inicio
     pushl %edi
     call free
@@ -612,7 +581,7 @@ _searching2:
     cmpl %edi, p_fim
     je _searchEnd2
     movl %edi, p_ant
-    movl 266(%edi), %edi
+    movl 270(%edi), %edi
     jmp _searching2
 
 
@@ -659,7 +628,7 @@ _searching:
     cmpl %edi, p_fim
     je _searchEnd
     movl %edi, p_ant
-    movl 266(%edi), %edi
+    movl 270(%edi), %edi
     jmp _searching
 
 
@@ -701,4 +670,3 @@ _menu:
     jz   _show_all_records
 
     jmp _menu  
-
