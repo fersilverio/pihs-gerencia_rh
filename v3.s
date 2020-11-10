@@ -5,36 +5,61 @@
 	#PRINTS PARA AS ENTRADAS DE DADOS
     pedeNome:	.asciz	"\nDigitar o nome completo: " #STRING DE 40 BYTES + CARACTER DE FIM DE STRING = 41 BYTES
     pedeCpf:	.asciz	"\nDigitar o numero do CPF: " #STRING DE 11 BYTES + CARACTER DE FIM DE STRING = 12 BYTES
-    pedeGenero:	.asciz	"\nDigite o genero <M>asculino/<F>eminino " #CARACTER DE 1 BYTE
+    pedeGenero:	.asciz	"\nDigite o genero Masculino (M) ou Feminino (F): " #CARACTER DE 4 BYTE
+    pedeDataNasc:	.asciz	"\nDigitar data de nascimento: " #STRING DE 10 BYTES -> 2 BYTES PARA AS BARRAS E 8 PARA OS DIGITOS + CARACTER DE FIM DE STRING = 11 BYTES
     pedeNomeBusca: .asciz "\nDigite o nome para a busca: "
+    pedeRua:    .asciz  "\nDigitar o logradouro: " #STRING DE 40 BYTES + CARACTER DE FIM DE STRING = 41 BYTES
+    pedeNumRua: .asciz  "\nDigitar o numero do logradouro: " #INTEIRO DE 4 BYTES
+    pedeBairro: .asciz  "\nDigitar o nome do bairro: " #STRING DE 40 BYTES + CARACTER DE FIM DE STRING = 41 BYTES 
+    pedeCep:    .asciz  "\nDigitar o CEP: " #STRING DE 8 BYTES + CARACTER DE FIM DE STRING = 9 BYTES 
+    pedeCidade: .asciz  "\bDigitar o nome da cidade: " #STRING DE 20 BYTES + CARACTER DE FIM DE STRING = 21 BYTES
+    pedeTelefone:   .asciz  "\nDigitar o telefone para contato: " #STRING DE 10 BYTES + CARACTER DE FIM DE STRING = 11 BYTES
+    pedeEmail:  .asciz  "\nDigitar o email: " #STRING DE 40 BYTES + CARACTER DE FIM DE STRING = 41 BYTES
+    pedeRg:     .asciz  "\nDigitar o numero do RG:" #STRING DE 9 BYTES + CARACTER DE FIM DE STRING = 10 BYTES
+    pedeDataContr:  .asciz  "\nDigitar a data da contratacao: " #STRING DE 10 BYTES -> 2 BYTES PARA AS BARRAS E 8 PARA OS DIGITOS + CARACTER DE FIM DE STRING = 11 BYTES
+    pedeCargo:  .asciz  "\nDigitar o cargo: " #STRING DE 10 BYTES + CARACTER DE FIM DE STRING = 11 BYTES
+    pedeSalario:    .asciz  "\nDigitar o salario: " #INTEIRO DE 4 BYTES
     #MOSTRAR OS CAMPOS POR TIPO
 	mostraNome:	.asciz	"\nNome: %s"
     mostraGenero:	.asciz	"\nGenero: %c"
     mostraCpf:	.asciz	"\nCPF: %s"
+    mostraDataNasc:	.asciz	"\nData de Nascimento: %d"
+    mostraRua:	.asciz	"\nLogradouro: %s"
+	mostraNumRua:	.asciz	"\nNumero: %d"
+	mostraBairro:	.asciz	"\nBairro: %s"
+	mostraCep:	.asciz	"\nCEP: %s"
+    mostraCidade:	.asciz	"\nCidade: %s"
+	mostraTelefone:	.asciz	"\nTelefone: %s"
+	mostraEmail:	.asciz	"\nEmail: %s"
+	mostraRg:	.asciz	"\nRG: %s"
+	mostraDataContr:	.asciz	"\nData de Contratacao: %s"
+	mostraCargo:	.asciz	"\nCargo: %s"
+	mostraSalario:	.asciz	"\nSalario: %d"
     #MENU PRINCIPAL DO PROGRAMA
-    menu:   .asciz  "\nMENU DE SELECAO\n\n1- INSERIR UM REGISTRO\n2- REMOVER UM REGISTRO\n3- CONSULTAR REGISTRO POR NOME\n4- MOSTRAR RELATORIO DE REGISTROS\n0- SAIR"
+    menu:   .asciz  "\n ****  MENU DE SELECAO  ****\n\n1----> INSERIR UM REGISTRO\n2----> REMOVER UM REGISTRO\n3----> CONSULTAR REGISTRO POR NOME\n4----> MOSTRAR RELATORIO DE REGISTROS\n0----> SAIR"
     selecaoOp: .asciz "\nDIGITAR A SUA ESCOLHA:\n"
     opcao:  .int 0
     #DEFINIÇÃO DO TAMANHO DO REGISTRO (EM BYTES)
-    tamDoRegistro:		.int	61
+    tamDoRegistro:		.int	270
     #DEFINIÇÃO DE RÓTULOS PARA TIPOS
 	Inteiro:	.asciz	"%d"
 	Char:	.asciz	"%c"
-	String:	.asciz	"%s"
 	lista:		.int	0
-    lista_copy:  .int    0
 	NULL:		.int	0
-    pulaLin:    .asciz "\n"
     #PARA ORIENTACAO NA LISTA
     p_inicio:    .int NULL
     p_atual: .int NULL
 	p_ant: .int NULL
 	p_fim: .int NULL
     flag:   .int 0
-    #MENSAGENS SUPORTE
-    msgEmpty:   .asciz "LISTA VAZIA\n"
-    msgRgNotFound: .asciz "REGISTRO NAO ENCONTRADO"
-    msgRmv: .asciz "REGISTRO REMOVIDO\n"
+    #STRINGS DE SUPORTE
+    pulaLin:    .asciz "\n"
+    divisoria:  .asciz "x-----x------x--------x"
+    msgEmpty:   .asciz "\nLISTA VAZIA\n"
+    msgIns: .asciz "\nREGISTRO INSERIDO COM SUCESSO\n"
+    msgRgNotFound: .asciz "\nREGISTRO NAO ENCONTRADO\n"
+    msgRmv: .asciz "\nREGISTRO REMOVIDO COM SUCESSO\n"
+    msgRel: .asciz "\nRELATORIO -> RELACAO DE TODOS OS FUNCIONARIOS\n"
     #VARIAVEIS SUPORTE
     nomeBusca: .space 41
 
@@ -68,9 +93,14 @@ _insertReg:
 
     cmpl $NULL, %eax
     jne _searchPosition
-    movl %eax, 57(%edi)
+    movl %eax, 266(%edi)
     movl %edi, p_inicio
     movl %edi, p_fim
+
+    pushl $msgIns
+    call printf
+    addl $4, %esp
+
     jmp _menu
 
 _readReg:
@@ -107,14 +137,145 @@ _readReg:
     popl %edi
     addl $4, %edi
 
+    pushl %edi
+
+    pushl $pedeDataNasc
+    call printf
+    addl $4, %esp
+    call gets
+    call gets
+
+    popl %edi
+    addl $10, %edi
+
+    pushl %edi
+
+    pushl $pedeRua
+    call printf
+    addl $4, %esp
+    call gets
+
+    popl %edi
+    addl $41, %edi
+
+    pushl %edi
+
+    pushl $pedeNumRua
+    call printf
+    addl $4, %esp
+    pushl $Inteiro
+    call scanf
+    addl $4, %esp
+
+    popl %edi
+    addl $4, %edi
+
+    pushl %edi
+
+    pushl $pedeBairro
+    call printf
+    addl $4, %esp
+    call gets
+    call gets
+
+    popl %edi
+    addl $41, %edi
+
+    pushl %edi
+
+    pushl $pedeCep
+    call printf
+    addl $4, %esp
+    call gets
+
+    popl %edi
+    addl $9, %edi
+
+    pushl %edi
+
+    pushl $pedeCidade
+    call printf
+    addl $4, %esp
+    call gets
+
+    popl %edi
+    addl $21, %edi
+
+
+    pushl %edi
+
+    pushl $pedeTelefone
+    call printf
+    addl $4, %esp
+    call gets
+
+    popl %edi
+    addl $11, %edi
+
+
+    pushl %edi
+
+    pushl $pedeEmail
+    call printf
+    addl $4, %esp
+    call gets
+
+    popl %edi
+    addl $41, %edi
+
+
+    pushl %edi
+
+    pushl $pedeRg
+    call printf
+    addl $4, %esp
+    call gets
+
+    popl %edi
+    addl $10, %edi
+
+    
+    pushl %edi
+
+    pushl $pedeDataContr
+    call printf
+    addl $4, %esp
+    call gets
+
+    popl %edi
+    addl $10, %edi
+
+
+    pushl %edi
+
+    pushl $pedeCargo
+    call printf
+    addl $4, %esp
+    call gets
+
+    popl %edi
+    addl $11, %edi
+
+    pushl %edi
+
+    pushl $pedeSalario
+    call printf
+    addl $4, %esp
+    pushl $Inteiro
+    call scanf
+    addl $4, %esp
+
+    popl %edi
+    addl $4, %edi
+
     movl $NULL, (%edi)
-    subl $57, %edi
+    subl $266, %edi
 
     ret
 
 _searchPosition:
     movl %eax, p_ant
-    movl 57(%eax), %ebx
+    movl 266(%eax), %ebx
     movl %ebx, p_atual
 
     pushl p_inicio
@@ -147,7 +308,7 @@ _searchMid:
 
     movl p_atual, %eax
     movl %eax, p_ant
-    movl 61(%eax), %ebx
+    movl 270(%eax), %ebx
     movl %ebx, p_atual
     jmp _searchMid
 
@@ -155,20 +316,20 @@ _searchMid:
 _insertInPosition:
     movl p_atual, %eax
     movl p_ant, %esi
-    movl %edi, 57(%esi)
-    movl %eax, 57(%esi)
+    movl %edi, 266(%esi)
+    movl %eax, 266(%esi)
     jmp _menu
 
 
 _insertStart:
     movl p_inicio, %esi
-    movl %esi, 57(%edi)
+    movl %esi, 266(%edi)
     movl %edi, p_inicio
     jmp _menu
 
 _insertEnd:
     movl p_fim, %eax
-    movl %edi, 57(%eax)
+    movl %edi, 266(%eax)
     movl %edi, p_fim
     jmp _menu
 
@@ -176,6 +337,11 @@ _insertEnd:
 #FUNCOES PARA MOSTRAR REGISTROS
 
 _showReg:
+    
+    pushl $divisoria
+    call printf
+    addl $4, %esp
+    
     pushl %edi
 
     pushl $mostraNome
@@ -201,8 +367,144 @@ _showReg:
     addl $8, %esp
 
     popl %edi
+    addl $4, %edi
+    pushl %edi
 
-    subl $53, %edi
+    #
+    pushl %edi
+
+    pushl $mostraDataNasc
+    call printf
+    addl $4, %esp
+
+    popl %edi
+    addl $10, %edi
+    pushl %edi
+
+    #
+
+    pushl %edi
+    pushl $mostraRua
+    call printf
+    addl $4, %esp
+
+    popl %edi
+    addl $41, %edi
+    pushl %edi
+
+
+    pushl (%edi)
+
+    pushl $mostraNumRua
+    call printf
+    addl $4, %esp
+
+    popl %edi
+    addl $4, %edi
+    pushl %edi
+
+
+    pushl %edi
+
+    pushl $mostraBairro
+    call printf
+    addl $4, %esp
+
+    popl %edi
+    addl $41, %edi
+    pushl %edi
+
+
+    pushl %edi
+
+    pushl $mostraCep
+    call printf
+    addl $4, %esp
+
+    popl %edi
+    addl $9, %edi
+    pushl %edi
+
+
+    pushl %edi
+
+    pushl $mostraCidade
+    call printf
+    addl $4, %esp
+
+    popl %edi
+    addl $21, %edi
+    pushl %edi
+
+
+    pushl %edi
+
+    pushl $mostraTelefone
+    call printf
+    addl $4, %esp
+
+    popl %edi
+    addl $11, %edi
+    pushl %edi
+
+
+    pushl %edi
+
+    pushl $mostraEmail
+    call printf
+    addl $4, %esp
+
+    popl %edi
+    addl $41, %edi
+    pushl %edi
+
+
+    pushl %edi
+
+    pushl $mostraRg
+    call printf
+    addl $4, %esp
+
+    popl %edi
+    addl $10, %edi
+    pushl %edi
+
+
+    pushl %edi
+
+    pushl $mostraDataContr
+    call printf
+    addl $4, %esp
+
+    popl %edi
+    addl $10, %edi
+    pushl %edi
+
+
+    pushl %edi
+
+    pushl $mostraCargo
+    call printf
+    addl $4, %esp
+
+    popl %edi
+    addl $11, %edi
+    pushl %edi
+
+
+    pushl (%edi)
+
+    pushl $mostraSalario
+    call printf
+    addl $8, %esp
+
+    popl %edi
+    addl $4, %edi
+
+
+    popl %edi
+
+    subl $262, %edi
 
     ret
 
@@ -223,12 +525,17 @@ _iterateList:
     addl $4, %esp
     cmpl %edi, p_fim
     je _return
-    movl 57(%edi), %edi
+    movl 266(%edi), %edi
     jmp _iterateList
 
 
 
 _show_all_records:
+    
+    pushl $msgRel
+    call printf
+    addl $4, %esp
+    
     movl p_inicio, %edi
     cmpl $NULL, %edi
     je _emptyList
@@ -250,7 +557,7 @@ _removeReg:
     jmp _removeMiddle
 
 _removeFront:
-    movl 57(%edi), %eax
+    movl 266(%edi), %eax
     movl %eax, p_inicio
     pushl %edi
     call free
@@ -271,8 +578,8 @@ _removeEnd:
 
 _removeMiddle:
     movl p_ant, %esi
-    movl 61(%edi), %eax
-    movl %eax, 61(%esi)
+    movl 270(%edi), %eax
+    movl %eax, 270(%esi)
     pushl %edi
     call free
     pushl $msgRmv
@@ -305,7 +612,7 @@ _searching2:
     cmpl %edi, p_fim
     je _searchEnd2
     movl %edi, p_ant
-    movl 57(%edi), %edi
+    movl 266(%edi), %edi
     jmp _searching2
 
 
@@ -352,7 +659,7 @@ _searching:
     cmpl %edi, p_fim
     je _searchEnd
     movl %edi, p_ant
-    movl 57(%edi), %edi
+    movl 266(%edi), %edi
     jmp _searching
 
 
