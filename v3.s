@@ -369,7 +369,7 @@ _showReg:
     addl $4, %edi
     pushl %edi
 
-    #
+    
     pushl $mostraDataNasc
     call printf
     addl $4, %esp
@@ -378,7 +378,7 @@ _showReg:
     addl $10, %edi
     pushl %edi
 
-    #
+    
     pushl $mostraRua
     call printf
     addl $4, %esp
