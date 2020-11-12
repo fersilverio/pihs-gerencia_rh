@@ -78,8 +78,9 @@ _fim:
     pushl $0
     call exit
 
-# FUNCOES PARA INSERCAO DE REGISTROS
+#----------------------------------FUNCOES PARA INSERCAO DE REGISTROS-----------------------------------------------#
 
+#FUNCAO CENTRAL QUE LE OS CAMPOS DO REGISTRO E PROCURA A POSICAO CORRETA QUE O MESMO DEVE SER INSERIDO
 _insertReg:
     movl tamDoRegistro, %ecx
     pushl %ecx
@@ -103,6 +104,7 @@ _insertReg:
 
     jmp _menu
 
+#FUNCAO QUE PRECISAMENTE LE OS DADOS, FUNCAO COMPONENTE DE _INSERTREG
 _readReg:
     pushl %edi
 
@@ -273,6 +275,7 @@ _readReg:
 
     ret
 
+#FUNCAO QUE PROCURA A POSICAO CORRETA PARA SE INSERIR O REGISTRO, FUNCAO COMPONENTE DE _INSERTREG
 _searchPosition:
     movl %eax, p_ant
     movl 270(%eax), %ebx
@@ -292,7 +295,7 @@ _searchPosition:
     cmpl $0, %eax
     jge _insertEnd
 
-
+#FUNCAO QUE BUSCA A POSICAO CORRETA PARA INSERIR O REGISTRO QUANDO NAO FOR CASO DE INSERCAO NO INICIO OU NO FIM, OU SEJA, NO MEIO
 _searchMid:
     movl p_atual, %eax
     cmpl %eax, p_fim
@@ -312,7 +315,7 @@ _searchMid:
     movl %ebx, p_atual
     jmp _searchMid
 
-
+#FUNCAO QUE CONCRETIZA A INSERCAO DEPOIS QUE A POSICAO NO MEIO FOI ENCONTRADA
 _insertInPosition:
     movl p_atual, %eax
     movl p_ant, %esi
@@ -320,13 +323,14 @@ _insertInPosition:
     movl %eax, 270(%esi)
     jmp _menu
 
-
+#FUNCAO QUE CONCRETIZA A INSERCAO NO INICIO DA LISTA
 _insertStart:
     movl p_inicio, %esi
     movl %esi, 270(%edi)
     movl %edi, p_inicio
     jmp _menu
 
+#FUNCAO QUE CONCRETIZA A INSERCAO NO FINAL DA LISTA
 _insertEnd:
     movl p_fim, %eax
     movl %edi, 270(%eax)
@@ -334,8 +338,10 @@ _insertEnd:
     jmp _menu
 
 
-#FUNCOES PARA MOSTRAR REGISTROS
+#---------------------------------------------FUNCOES PARA MOSTRAR REGISTROS-------------------------------------------#
 
+
+#FUNCAO QUE MOSTRA TODOS OS CAMPOS DE UM REGISTRO
 _showReg:
     
     pushl $divisoria
@@ -477,16 +483,19 @@ _showReg:
 
     ret
 
-
+#FUNCAO CRIADA COMO "PONTO DE ESCAPE" PARA O MENU
 _return:
     jmp _menu
 
+
+#FUNCAO QUE MOSTRA QUE A LISTA ESTA VAZIA
 _emptyList:
     pushl $msgEmpty
     call printf
     addl $4, %esp
     jmp _return
 
+#FUNCAO UTILIZADA PARA PERCORRER A LISTA, REGISTRO POR REGISTRO
 _iterateList:
     call _showReg
     pushl $pulaLin
@@ -498,7 +507,7 @@ _iterateList:
     jmp _iterateList
 
 
-
+#FUNCAO CENTRAL QUE POSSUI A FINALIDADE DE MOSTRAR TODOS OS REGISTROS INSERIDOS NA LISTA
 _show_all_records:
     
     pushl $msgRel
@@ -511,8 +520,10 @@ _show_all_records:
     jne _iterateList
 
 
-#FUNCOES PARA REMOVER
+#-------------------------------------------------FUNCOES PARA REMOVER---------------------------------------------#
 
+
+#FUNCAO CENTRAL QUE POSSUI A FINALIDADE DE REMOVER UM REGISTRO DA LISTA
 _removeReg:
     movl $0, flag
     call _searchReg_ByName2
@@ -525,6 +536,7 @@ _removeReg:
     je _removeEnd
     jmp _removeMiddle
 
+#FUNCAO QUE CONCRETIZA A REMOCAO DO PRIMEIRO ELEMENTO DA LISTA
 _removeFront:
     movl 270(%edi), %eax
     movl %eax, p_inicio
@@ -535,6 +547,7 @@ _removeFront:
     addl $8, %esp
     jmp _return
 
+#FUNCAO QUE CONCRETIZA A REMOCAO DO ULTIMO ELEMENTO DA LISTA
 _removeEnd:
     movl p_ant, %eax
     movl %eax, p_fim
@@ -545,6 +558,8 @@ _removeEnd:
     addl $8, %esp
     jmp _return
 
+
+#FUNCAO QUE CONCRETIZA A REMOCAO DO ELEMENTO NO MEIO DA LISTA
 _removeMiddle:
     movl p_ant, %esi
     movl 270(%edi), %eax
@@ -560,6 +575,9 @@ _removeMiddle:
 
 
 # PROCURAR POR NOME SEM RETORNO PARA O MENU - VERSAO PARA REMOVER
+
+#FUNCOES ABAIXO POSSUEM A MESMA FINALIDADE DO QUE AS DE BUSCA POREM FORAM REESCRITA COM MODIFICACOES PARA SEREM UTILIZADAS PARA A REMOCAO
+
 _searchReg_ByName2:
     movl p_inicio, %edi
     cmpl $NULL, %edi
@@ -605,8 +623,11 @@ _returnForRemove:
     ret
     
 
-#FUNCOES PARA BUSCA
+#--------------------------------------------------------FUNCOES PARA BUSCA---------------------------------------------#
 
+
+
+#FUNCAO CENTRAL QUE TEM A FINALIDADE DE PROCURAR UM REGISTRO PELO NOME
 _searchReg_ByName:
     movl p_inicio, %edi
     cmpl $NULL, %edi
@@ -618,6 +639,7 @@ _searchReg_ByName:
     call gets
     addl $8, %esp
 
+#FUNCAO QUE CONTINUA A BUSCA, ELA SE REPETE ATE ENCONTRAR O REGISTRO CORRETO
 _searching:
     pushl %edi
     pushl $nomeBusca
@@ -631,7 +653,7 @@ _searching:
     movl 270(%edi), %edi
     jmp _searching
 
-
+#A BUSCA FOI UM SUCESSO E O REGISTRO PROCURADO SERA MOSTRADO
 _success:
     movl $1, %eax
     movl %eax, flag
@@ -641,12 +663,14 @@ _success:
     addl $4, %esp
     jmp _return
 
+#FUNCAO QUE REPRESENTA O FINAL DA BUSCA
 _searchEnd:
     pushl $msgRgNotFound
     call printf
     addl $4, %esp
     jmp _return
 
+#MENU DE SELECAO, PARA ESCOLHERMOS QUAL FUNCIONALIDADE DO SISTEMA QUE IREMOS UTILIZAR
 _menu:
     pushl $menu
     call  printf
