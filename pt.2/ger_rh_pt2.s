@@ -40,10 +40,11 @@
     selecaoOp: .asciz "\nDIGITAR A SUA ESCOLHA:\n"
     opcao:  .int 0
     #DEFINIÇÃO DO TAMANHO DO REGISTRO (EM BYTES)
-    tamDoRegistro:		.int	274
+    tamDoRegistro:		.int	278 #somado 4 em relacao a versao anterior -> de int foi pra double
     #DEFINIÇÃO DE RÓTULOS PARA TIPOS
 	Inteiro:	.asciz	"%d"
 	Char:	.asciz	"%c"
+    tipolf:	.asciz	"%lf" #adicionado o tipo float
 	lista:		.int	0
 	NULL:		.int	0
     #PARA ORIENTACAO NA LISTA
@@ -70,6 +71,7 @@
 .globl _start
 
 _start:
+    finit #para acionar a FPU
     pushl $abertura
     call printf
     addl $4, %esp
@@ -263,22 +265,22 @@ _readReg:
     pushl $pedeSalario
     call printf
     addl $4, %esp
-    pushl $Inteiro
+    pushl $tipolf
     call scanf
     addl $4, %esp
 
     popl %edi
-    addl $4, %edi
+    addl $8, %edi
 
     movl $NULL, (%edi)
-    subl $270, %edi
+    subl $274, %edi
 
     ret
 
 #FUNCAO QUE PROCURA A POSICAO CORRETA PARA SE INSERIR O REGISTRO, FUNCAO COMPONENTE DE _INSERTREG
 _searchPosition:
     movl %eax, p_ant
-    movl 270(%eax), %ebx
+    movl 274(%eax), %ebx
     movl %ebx, p_atual
 
     pushl p_inicio
@@ -311,7 +313,7 @@ _searchMid:
 
     movl p_atual, %eax
     movl %eax, p_ant
-    movl 270(%eax), %ebx
+    movl 274(%eax), %ebx
     movl %ebx, p_atual
     jmp _searchMid
 
@@ -319,8 +321,8 @@ _searchMid:
 _insertInPosition:
     movl p_atual, %eax
     movl p_ant, %esi
-    movl %edi, 270(%esi)
-    movl %eax, 270(%esi)
+    movl %edi, 274(%esi)
+    movl %eax, 274(%esi)
     jmp _menu
 
 #FUNCAO QUE CONCRETIZA A INSERCAO NO INICIO DA LISTA
@@ -333,7 +335,7 @@ _insertStart:
 #FUNCAO QUE CONCRETIZA A INSERCAO NO FINAL DA LISTA
 _insertEnd:
     movl p_fim, %eax
-    movl %edi, 270(%eax)
+    movl %edi, 274(%eax)
     movl %edi, p_fim
     jmp _menu
 
@@ -470,16 +472,18 @@ _showReg:
 
 
     pushl (%edi)
-
+    flds (%edi)
+    subl $8, %esp
+    fstl (%esp)
     pushl $mostraSalario
     call printf
     addl $8, %esp
 
     popl %edi
-    addl $4, %edi
+    addl $8, %edi
 
 
-    subl $270, %edi
+    subl $274, %edi
 
     ret
 
@@ -503,7 +507,7 @@ _iterateList:
     addl $4, %esp
     cmpl %edi, p_fim
     je _return
-    movl 270(%edi), %edi
+    movl 274(%edi), %edi
     jmp _iterateList
 
 
@@ -538,7 +542,7 @@ _removeReg:
 
 #FUNCAO QUE CONCRETIZA A REMOCAO DO PRIMEIRO ELEMENTO DA LISTA
 _removeFront:
-    movl 270(%edi), %eax
+    movl 274(%edi), %eax
     movl %eax, p_inicio
     pushl %edi
     call free
@@ -562,8 +566,8 @@ _removeEnd:
 #FUNCAO QUE CONCRETIZA A REMOCAO DO ELEMENTO NO MEIO DA LISTA
 _removeMiddle:
     movl p_ant, %esi
-    movl 270(%edi), %eax
-    movl %eax, 270(%esi)
+    movl 274(%edi), %eax
+    movl %eax, 274(%esi)
     pushl %edi
     call free
     pushl $msgRmv
@@ -599,7 +603,7 @@ _searching2:
     cmpl %edi, p_fim
     je _searchEnd2
     movl %edi, p_ant
-    movl 270(%edi), %edi
+    movl 274(%edi), %edi
     jmp _searching2
 
 
@@ -650,7 +654,7 @@ _searching:
     cmpl %edi, p_fim
     je _searchEnd
     movl %edi, p_ant
-    movl 270(%edi), %edi
+    movl 274(%edi), %edi
     jmp _searching
 
 #A BUSCA FOI UM SUCESSO E O REGISTRO PROCURADO SERA MOSTRADO
