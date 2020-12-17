@@ -34,7 +34,7 @@
 	mostraRg:	.asciz	"\nRG: %s"
 	mostraDataContr:	.asciz	"\nData de Contratacao: %s"
 	mostraCargo:	.asciz	"\nCargo: %s"
-	mostraSalario:	.asciz	"\nSalario: %d"
+	mostraSalario:	.asciz	"\nSalario: %lf"
     #MENU PRINCIPAL DO PROGRAMA
     menu:   .asciz  "\n ****  MENU DE SELECAO  ****\n\n1----> INSERIR UM REGISTRO\n2----> REMOVER UM REGISTRO\n3----> CONSULTAR REGISTRO POR NOME\n4----> MOSTRAR RELATORIO DE REGISTROS\n0----> SAIR"
     selecaoOp: .asciz "\nDIGITAR A SUA ESCOLHA:\n"
@@ -44,7 +44,7 @@
     #DEFINIÇÃO DE RÓTULOS PARA TIPOS
 	Inteiro:	.asciz	"%d"
 	Char:	.asciz	"%c"
-    tipolf:	.asciz	"%lf" #adicionado o tipo float
+    tipolf:	.asciz	"%f" #adicionado o tipo float
 	lista:		.int	0
 	NULL:		.int	0
     #PARA ORIENTACAO NA LISTA
@@ -71,7 +71,6 @@
 .globl _start
 
 _start:
-    finit #para acionar a FPU
     pushl $abertura
     call printf
     addl $4, %esp
@@ -345,7 +344,7 @@ _insertEnd:
 
 #FUNCAO QUE MOSTRA TODOS OS CAMPOS DE UM REGISTRO
 _showReg:
-    
+    finit #para acionar a FPU
     pushl $divisoria
     call printf
     addl $4, %esp
@@ -477,7 +476,7 @@ _showReg:
     fstl (%esp)
     pushl $mostraSalario
     call printf
-    addl $8, %esp
+    addl $16, %esp
 
     popl %edi
     addl $8, %edi
