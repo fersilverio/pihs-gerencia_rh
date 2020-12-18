@@ -19,6 +19,8 @@
     pedeDataContr:  .asciz  "\nDigitar a data da contratacao: " #STRING DE 10 BYTES -> 2 BYTES PARA AS BARRAS E 8 PARA OS DIGITOS + CARACTER DE FIM DE STRING = 11 BYTES
     pedeCargo:  .asciz  "\nDigitar o cargo: " #STRING DE 10 BYTES + CARACTER DE FIM DE STRING = 11 BYTES
     pedeSalario:    .asciz  "\nDigitar o salario: " #INTEIRO DE 4 BYTES
+    pedeReaj:   .asciz "\nDigitar a porcentagem desejada de aumento: "
+
     #MOSTRAR OS CAMPOS POR TIPO
 	mostraNome:	.asciz	"\nNome: %s"
     mostraGenero:	.asciz	"\nGenero: %c"
@@ -35,8 +37,10 @@
 	mostraDataContr:	.asciz	"\nData de Contratacao: %s"
 	mostraCargo:	.asciz	"\nCargo: %s"
 	mostraSalario:	.asciz	"\nSalario: %lf"
+    mostraReaj: .asciz "\nDespesas adicionais(pos reajuste): %f"
+
     #MENU PRINCIPAL DO PROGRAMA
-    menu:   .asciz  "\n ****  MENU DE SELECAO  ****\n\n1----> INSERIR UM REGISTRO\n2----> REMOVER UM REGISTRO\n3----> CONSULTAR REGISTRO POR NOME\n4----> MOSTRAR RELATORIO DE REGISTROS\n0----> SAIR"
+    menu:   .asciz  "\n ****  MENU DE SELECAO  ****\n\n1----> INSERIR UM REGISTRO\n2----> REMOVER UM REGISTRO\n3----> CONSULTAR REGISTRO POR NOME\n4----> MOSTRAR RELATORIO DE REGISTROS\n5----> REAJUSTAR SALARIO DOS FUNCIONARIOS\n0----> SAIR"
     selecaoOp: .asciz "\nDIGITAR A SUA ESCOLHA:\n"
     opcao:  .int 0
     #DEFINIÇÃO DO TAMANHO DO REGISTRO (EM BYTES)
@@ -61,9 +65,14 @@
     msgRgNotFound: .asciz "\nREGISTRO NAO ENCONTRADO\n"
     msgRmv: .asciz "\nREGISTRO REMOVIDO COM SUCESSO\n"
     msgRel: .asciz "\nRELATORIO -> RELACAO DE TODOS OS FUNCIONARIOS\n"
+    msgReaj:    .asciz "\nSECAO PARA O REAJUSTE DE SALARIO DOS FUNCIONARIOS:\n"
+
     #VARIAVEIS SUPORTE
     nomeBusca: .space 41
-
+    reajuste_perc: .float 0.0
+    despesa_add:    .float 0.0
+    sal_atual:  .float 0.0
+    um: .float 1.0
 
     
 
@@ -71,6 +80,8 @@
 .globl _start
 
 _start:
+    finit
+
     pushl $abertura
     call printf
     addl $4, %esp
@@ -344,7 +355,7 @@ _insertEnd:
 
 #FUNCAO QUE MOSTRA TODOS OS CAMPOS DE UM REGISTRO
 _showReg:
-    finit #para acionar a FPU
+    #finit #para acionar a FPU
     pushl $divisoria
     call printf
     addl $4, %esp
@@ -673,6 +684,72 @@ _searchEnd:
     addl $4, %esp
     jmp _return
 
+
+
+# --------------------------------------- FUNCOES PARA REAJUSTE DE SALARIO ------------------------------------#
+
+_readjustWages:
+    pushl $msgReaj
+    call printf
+    pushl $pedeReaj
+    call printf
+    pushl $reajuste_perc
+    pushl $tipolf
+    call scanf
+
+    addl $16, %esp
+
+    flds despesa_add
+
+    addl $8, %esp
+
+    jmp _startReadjust
+
+_startReadjust:
+    movl lista, %edi
+    cmpl $NULL, %edi
+    jnz _continue
+
+    pushl $msgEmpty
+    call printf
+    addl $4, %esp
+
+    jmp _menu
+
+_continue:
+    movl lista, %edi
+    movl $1, %ecx
+
+_iterateRegs:
+    cmpl $NULL, %edi
+    jz _endReadjust
+
+    pushl %edi
+    pushl %ecx
+
+    movl 4(%esp), %edi
+    call _update
+
+    popl %ecx
+    incl %ecx
+    popl %edi
+    movl 274(%edi), %edi
+
+    jmp _iterateRegs
+
+_endReadjust:
+    subl $8, %esp
+    fstpl (%esp)
+    pushl $mostraReaj
+    call printf
+    addl $12, %esp
+
+    jmp _menu
+
+
+_update:
+
+
 #MENU DE SELECAO, PARA ESCOLHERMOS QUAL FUNCIONALIDADE DO SISTEMA QUE IREMOS UTILIZAR
 _menu:
     pushl $menu
@@ -695,5 +772,7 @@ _menu:
     jz   _searchReg_ByName 
     cmpl $4, opcao
     jz   _show_all_records
+    cmpl $5, opcao
+    jz   _readjustWages
 
     jmp _menu  
