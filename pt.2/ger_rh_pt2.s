@@ -1,7 +1,7 @@
 #TRABALHO 1 DA DISCIPLINA PIHS- FERNANDO SILVA SILVÉRIO - 98936 - UEM - 2020
 .section .data
     #ABERTURA DO PROGRAMA
-    abertura:	.asciz	"\nTrabalho Pratico #1 - Gestão de RH - by Fernando S. Silvério (98936)\n\n"
+    abertura:	.asciz	"\nTrabalho Pratico #2 - Gestão de RH - by Fernando S. Silvério (98936)\n\n"
 	#PRINTS PARA AS ENTRADAS DE DADOS
     pedeNome:	.asciz	"\nDigitar o nome completo: " #STRING DE 40 BYTES + CARACTER DE FIM DE STRING = 41 BYTES
     pedeCpf:	.asciz	"\nDigitar o numero do CPF: " #STRING DE 11 BYTES + CARACTER DE FIM DE STRING = 12 BYTES
@@ -69,9 +69,9 @@
 
     #VARIAVEIS SUPORTE
     nomeBusca: .space 41
-    reajuste_perc: .float 0.0
+    reajuste_perc: .space 4
     despesa_add:    .float 0.0
-    sal_atual:  .float 0.0
+    sal_atual:  .space 4
     um: .float 1.0
 
     
@@ -718,20 +718,19 @@ _startReadjust:
 
 _continue:
     movl lista, %edi
-    movl $1, %ecx
+    
 
 _iterateRegs:
     cmpl $NULL, %edi
     jz _endReadjust
 
     pushl %edi
-    pushl %ecx
+    
 
-    movl 4(%esp), %edi
     call _update
 
-    popl %ecx
-    incl %ecx
+    
+    
     popl %edi
     movl 274(%edi), %edi
 
@@ -748,7 +747,38 @@ _endReadjust:
 
 
 _update:
+    pushl %edi #endereço de inicio -> contém todos os campos do registro
 
+    popl %edi   #recuperar o edi
+    addl $266, %edi #campo do nome -> pulando o campo do nome
+    #pushl %edi #armazenando na lista
+
+ 
+    #pushl %edi
+
+    #chegou no campo do salario
+
+    movl (%edi), %eax
+    movl %eax, sal_atual
+    flds reajuste_perc
+    fmuls sal_atual
+
+    fstps (%edi)
+
+    subl $266, %edi
+
+    addl $266, %edi
+
+    flds (%edi)
+    fsubs sal_atual
+    fadd %st(0), %st(1)
+    subl $8, %esp
+    fstpl (%esp)
+    addl $8, %esp
+
+    subl $266, %edi
+
+    ret
 
 #MENU DE SELECAO, PARA ESCOLHERMOS QUAL FUNCIONALIDADE DO SISTEMA QUE IREMOS UTILIZAR
 _menu:
