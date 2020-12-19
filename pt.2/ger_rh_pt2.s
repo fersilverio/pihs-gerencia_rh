@@ -701,7 +701,7 @@ _readjustWages:
 
     flds despesa_add
 
-    addl $8, %esp
+    #addl $8, %esp
 
     jmp _startReadjust
 
@@ -725,12 +725,9 @@ _iterateRegs:
     jz _endReadjust
 
     pushl %edi
-    
 
     call _update
 
-    
-    
     popl %edi
     movl 274(%edi), %edi
 
